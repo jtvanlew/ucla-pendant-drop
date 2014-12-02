@@ -1,5 +1,5 @@
 import cv2
-import numpy as np
+from numpy import *
 from matplotlib     import pyplot as plt, cm, colors
 from scipy      	import optimize
 
@@ -39,8 +39,8 @@ y = []
 
 # move through the rows and columns of image matrix and 
 # pull out the x and y coordinates of the data
-for row in matrix:
-    count2 = len(matrix)
+for row in edges:
+    count2 = len(edges)
     for column in row:
         w = linalg.norm(column)
         if w > 0:
