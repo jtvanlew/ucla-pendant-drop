@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import sys, os
 
 # Colors (B, G, R)
 WHITE = (255, 255, 255)
@@ -18,8 +19,8 @@ def create_blank(width, height, color=(0, 0, 0)):
 def draw_half_circle_rounded(image, startAngle, endAngle):
     height, width = image.shape[0:2]
     # Ellipse parameters
-    radius1 = 125
-    radius2 = 150
+    radius1 = 200
+    radius2 = 250
     center = (width / 2, height/2 )
     axes = (radius1, radius2)
     angle = 0
@@ -31,15 +32,15 @@ def draw_half_circle_rounded(image, startAngle, endAngle):
 
 
 # Create new blank 300x150 white image
-
-image = cv2.imread('droplet/droplet.jpg')
+imageFile = sys.argv[1]
+image = cv2.imread(imageFile)
 draw_half_circle_rounded(image, 135, 225)
 draw_half_circle_rounded(image, -45, 45)
 cv2.imwrite('output/half_circle_droplet.jpg', image)
 
 
-# height, width = 435, 766
-# image2 = create_blank(width, height, color=WHITE)
-# draw_half_circle_rounded(image2, 135, 225)
-# draw_half_circle_rounded(image2, -45, 45)
-# cv2.imwrite('half_circle_blank.jpg', image2)
+height, width = 736, 953
+image2 = create_blank(width, height, color=WHITE)
+draw_half_circle_rounded(image2, 135, 225)
+draw_half_circle_rounded(image2, -45, 45)
+cv2.imwrite('output/half_circle_blank.jpg', image2)
