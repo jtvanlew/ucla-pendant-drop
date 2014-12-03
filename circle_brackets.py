@@ -39,7 +39,7 @@ draw_half_circle_rounded(image, -45, 45)
 cv2.imwrite('output/half_circle_droplet.jpg', image)
 
 
-height, width = 736, 953
+height, width = 733, 824
 image2 = create_blank(width, height, color=WHITE)
 draw_half_circle_rounded(image2, 135, 225)
 draw_half_circle_rounded(image2, -45, 45)

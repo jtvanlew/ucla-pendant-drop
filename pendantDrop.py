@@ -18,13 +18,12 @@ c1, c2 = w/2, h/2
 # block out any reflections in the droplet
 cv2.circle(img, (c1, c2), w/6, BLACK, thickness=-1)
 
-
+threshold_low  = 20
+threshold_high = 225
 # pull out edges of the entire droplet
-ret,dropletFull = cv2.threshold(img,20,225,cv2.THRESH_BINARY)
+ret,dropletFull = cv2.threshold(img,threshold_low,threshold_high,cv2.THRESH_BINARY)
 fullEdges = cv2.Canny(dropletFull, 30, 80)
 dropletFull[fullEdges != 0] = (0, 255, 0)
-#plt.imshow(dropletFull)
-
 
 
 # Pull out just the bottom of the droplet in order to find the radius of curvature
@@ -32,13 +31,9 @@ r1 = 300
 x1, x2 = c1-r1, c1+r1
 y1, y2 = c2, c2+r1
 dropletBottom = img[y1:y2, x1:x2]       
-ret,dropletBottom = cv2.threshold(dropletBottom,20,225,cv2.THRESH_BINARY)
+ret,dropletBottom = cv2.threshold(dropletBottom,threshold_low,threshold_high,cv2.THRESH_BINARY)
 edges = cv2.Canny(dropletBottom, 30, 80)
 dropletBottom[edges != 0] = (0, 255, 0)
-
-cv2.imwrite('output/droplet_filled.jpg', dropletBottom)
-cv2.imwrite('output/droplet_edges.jpg',edges)
-# save('output/edges',edges)
 # ========================================================
 
 
@@ -138,9 +133,6 @@ def plot_all():
     plt.plot(x, y, 'co', label='data', ms=8, mec='c', mew=1)
     plt.legend(loc='best',labelspacing=0.1 )
 
-    # plt.xlim(xmin=vmin, xmax=vmax)
-    # plt.ylim(ymin=vmin, ymax=vmax)
-
     plt.grid()
     plt.title('Least Squares Circle')
     plt.savefig('output/fit_%s.png' % (basename))
@@ -233,17 +225,21 @@ x_de_array = zeros(20) + max(x)-de/2.
 
 
 def pixels2m(value):
-    needleMM = 0.51
-    # needleMM = 1.85
+    # water
+    # needleMM = 0.51
+    
+    # hexadecane
+    needleMM = 1.95
     mPerPixel = needleMM/needleWidth*1./1000.
     return value*mPerPixel
 
-
+dsPx = ds
+dePx = de
+needleWidthPx = needleWidth
 ds = pixels2m(ds)
 de = pixels2m(de) 
+needleWidth = pixels2m(needleWidth)
 
-# Summary
-print "Droplet diameter = "+str(round(ds*1000,2))+" mm"
 
 
 # ======== Get surface tension from diameters
@@ -254,11 +250,13 @@ def H_func(s):
     H = 1/OneOverH
     return H
 def gamma_func(H,de):
-    rhoAir = 1.2754 #kg/m3
-    rhoWater = 999.97 #kg/m3
-    deltaRho = rhoAir - rhoWater
+    # water
+    # rhoAir = 1.2754 #kg/m3
+    # rhoWater = 999.97 #kg/m3
+    # deltaRho = rhoAir - rhoWater
+    
     # hexadecane:
-    # deltaRho = 768.761 # kg/m3
+    deltaRho = -768.761 # kg/m3
     g        = 9.8 
     gamma = -deltaRho*g*de**2/H     # N/m
     gamma_mN = gamma * 1000         # mN/m
@@ -268,10 +266,11 @@ def gamma_func(H,de):
 H = H_func(s)
 gamma = gamma_func(H, de)
 
-print "Surface tension: " +str(gamma) + "mN/m"
+# Summary
 
-
-
+from tabulate import tabulate
+table = [[round(dsPx), round(ds*1000,2), round(dePx), round(de*1000,2), round(needleWidthPx), round(needleWidth*1000,2), gamma]]
+print tabulate(table, headers=['ds (px)', 'ds (mm)', 'de (px)', 'de (mm)', 'needle (px)', 'needle (m)', "Surface tension (mN/m)"])
 
 
 plt.figure(2)
@@ -288,15 +287,15 @@ plt.scatter(x,y,
 plt.plot(x_de_array,y_de_array,
          label='Droplet diameter',
          color='r',
-         linewidth=4)
+         linewidth=2)
 plt.plot(x_ds_array,y_ds_array,
          label='Throat diameter',
          color='b',
-         linewidth=4)
+         linewidth=2)
 plt.plot(x_needle,y_needle,
          label='Needle width',
          color='g',
-         linewidth=4)
+         linewidth=2)
 plt.legend(loc='best')
 plt.savefig('output/droplet_w_diameters.png')
 plt.show()
