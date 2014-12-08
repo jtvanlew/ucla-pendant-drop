@@ -18,7 +18,7 @@ c1, c2 = w/2, h/2
 # block out any reflections in the droplet
 cv2.circle(img, (c1, c2), w/6, BLACK, thickness=-1)
 
-threshold_low  = 30 #use 30 for hexadecane and 10 for h2o
+threshold_low  = 30
 threshold_high = 225
 # pull out edges of the entire droplet
 ret,dropletFull = cv2.threshold(img,threshold_low,threshold_high,cv2.THRESH_BINARY)
